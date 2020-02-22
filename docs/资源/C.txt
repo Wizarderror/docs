@@ -1,0 +1,71 @@
+﻿#include <bits/stdc++.h>
+ 
+using namespace std;
+using ll = long long;
+ 
+int n;
+char s[222];
+ 
+int mat[29][29];
+int deg[29];
+int vis[29];
+ 
+char ans[29];
+int sz;
+ 
+bool dfs(int u, int p) {
+	vis[u] = 1;
+	ans[sz++] = char(u + 'a');
+	for(int v = 0; v < 26; v++) if(mat[u][v] and v != p) {
+		if(vis[v] == 0) {
+			if(!dfs(v, u)) return false;
+		}
+		else if(vis[v] == 1) return false;
+	}
+	vis[u] = 2;
+	return true;
+}
+ 
+int main() {
+ 
+	int t;
+	scanf("%d", &t);
+ 
+	while(t--) {
+		scanf(" %s", s);
+		n = (int)strlen(s);
+		memset(mat, 0, sizeof mat);
+		memset(deg, 0, sizeof deg);
+		memset(vis, 0, sizeof vis);
+ 
+		for(int i = 0; i + 1 < n; i++) {
+			int a = int(s[i] - 'a');
+			int b = int(s[i + 1] - 'a');
+			if(!mat[a][b]) deg[a]++;
+			if(!mat[b][a]) deg[b]++;
+			mat[a][b] = mat[b][a] = 1;
+		}
+ 
+		bool can = true;
+		for(int i = 0; i < 26; i++) if(deg[i] > 2) {
+			can = false;
+		}
+		sz = 0;
+		for(int i = 0; i < 26; i++) if(!vis[i]) {
+			if(deg[i] == 0) {
+				ans[sz++] = char(i + 'a');
+			}
+			else if(deg[i] == 1) {
+				if(!dfs(i, i)) can = false;
+			}
+		}
+		ans[sz] = 0;
+		if(!can or sz != 26) {
+			printf("NO\n");
+			continue;
+		}
+		printf("YES\n");
+		ans[sz] = 0;
+		printf("%s\n", ans);
+	}
+}
